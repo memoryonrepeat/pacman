@@ -73,11 +73,12 @@ def tinyMazeSearch(problem):
     return  [s, s, w, s, w, w, s, w]
 
 class State:
-    
-    def _init_(self, node, parent, action, totalCost):
+    #actions: list of steps to reach this node from start node
+    #totalCost: sum of cost to to reach this node from start node
+    def __init__(self, node, parent, actions, totalCost):
         self.parent = parent
         self.node = node
-        self.action = action
+        self.actions = actions
         self.totalCost = totalCost
 
     def getNode(self):
@@ -86,15 +87,33 @@ class State:
     def getParent(self):
         return self.parent
 
-    def getAction(self):
-        return self.action
+    def getActions(self):
+        return self.actions
 
     def getTotalCost(self):
         return self.totalCost
     
 def graphSearch(problem, fringe):
-    return
-    
+    closed = set()
+    start = State(problem.getStartState(), None, [], 0)
+    fringe.push(start)
+    while(True):
+        if fringe.isEmpty():
+            raise Exception("Solution not found")
+
+        node = fringe.pop()
+
+        if problem.isGoalState(node.getNode()):
+            return node.getActions()
+
+        if node.getNode() not in closed:
+            closed.add(node.getNode())
+
+            for (successor,action,stepCost) in problem.getSuccessors(node.getNode()):
+                nextState = State(successor, node.getNode(), node.getActions() + [action], node.getTotalCost() + stepCost)
+                fringe.push(nextState)
+
+    return    
 
 def depthFirstSearch(problem):
     """
@@ -111,8 +130,8 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
-    
-    fringe = Stack()
+
+    fringe = util.Stack()
     return graphSearch(problem, fringe)
 
 def breadthFirstSearch(problem):

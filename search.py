@@ -72,6 +72,30 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
+class State:
+    
+    def _init_(self, node, parent, action, totalCost):
+        self.parent = parent
+        self.node = node
+        self.action = action
+        self.totalCost = totalCost
+
+    def getNode(self):
+        return self.node
+
+    def getParent(self):
+        return self.parent
+
+    def getAction(self):
+        return self.action
+
+    def getTotalCost(self):
+        return self.totalCost
+    
+def graphSearch(problem, fringe):
+    return
+    
+
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
@@ -87,7 +111,9 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    
+    fringe = Stack()
+    return graphSearch(problem, fringe)
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""

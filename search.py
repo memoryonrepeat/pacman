@@ -75,11 +75,12 @@ def tinyMazeSearch(problem):
 class State:
     #actions: list of steps to reach this node from start node
     #totalCost: sum of cost to to reach this node from start node
-    def __init__(self, node, parent, actions, totalCost):
+    def __init__(self, node, parent, actions, totalCost, gCost=0):
         self.parent = parent
         self.node = node
         self.actions = actions
         self.totalCost = totalCost
+        self.gCost = gCost
 
     def getNode(self):
         return self.node
@@ -92,6 +93,9 @@ class State:
 
     def getTotalCost(self):
         return self.totalCost
+
+    def getGCost(self):
+        return self.gCost
     
 def graphSearch(problem, fringe):
     closed = set()
@@ -158,7 +162,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     "*** YOUR CODE HERE ***"
     closed = {}
     fringe = util.PriorityQueueWithFunction(lambda node: node.getTotalCost())
-    start = State(problem.getStartState(), None, [], heuristic(problem.getStartState(),problem))
+    start = State(problem.getStartState(), None, [], heuristic(problem.getStartState(),problem), 0)
     fringe.push(start)
     while(True):
         if fringe.isEmpty():
@@ -170,10 +174,10 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             return node.getActions()
 
         if node.getNode() not in closed or node.getTotalCost() < closed[node.getNode()] :
-            closed[node.getNode()] = node.getTotalCost()
+            closed[node.getNode()] = node.getGCost()
 
             for (successor,action,stepCost) in problem.getSuccessors(node.getNode()):
-                nextState = State(successor, node.getNode(), node.getActions() + [action], node.getTotalCost() + stepCost + heuristic(successor,problem))
+                nextState = State(successor, node.getNode(), node.getActions() + [action], node.getGCost() + stepCost + heuristic(successor,problem), node.getGCost()+stepCost)
                 fringe.push(nextState)
 
     return

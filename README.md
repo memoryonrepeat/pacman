@@ -1,5 +1,3 @@
-pacman
-======
 
 Berkeley CS188 Intro to AI - Pacman project
 ======

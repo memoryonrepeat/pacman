@@ -460,7 +460,14 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
+    foodList = foodGrid.asList()
+
+    #toReturn = [util.manhattanDistance(position,food) for food in foodList]
+    toReturn = [mazeDistance(position,food,problem.startingGameState) for food in foodList]
+
+    if toReturn:
+        return max(toReturn)
+
     return 0
 
 class ClosestDotSearchAgent(SearchAgent):

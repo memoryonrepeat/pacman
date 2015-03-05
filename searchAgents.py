@@ -464,6 +464,7 @@ def foodHeuristic(state, problem):
 
     #toReturn = [util.manhattanDistance(position,food) for food in foodList]
     toReturn = [mazeDistance(position,food,problem.startingGameState) for food in foodList]
+    #TODO: Try minimum spanning tree / techniques discussed in piazza (cache/dp ...)
 
     if toReturn:
         return max(toReturn)
@@ -499,7 +500,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return search.bfs(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -535,7 +536,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.food[x][y]
 
 def mazeDistance(point1, point2, gameState):
     """

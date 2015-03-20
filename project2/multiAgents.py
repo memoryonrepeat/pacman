@@ -215,7 +215,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         
         v = max(v, self.minValue(state.generateSuccessor(agentIndex, action), (agentIndex+1) % state.getNumAgents(), depth, alpha, beta))
 
-        if v >= beta:
+        if v > beta:
           return v
         alpha = max(alpha, v)
 
@@ -238,13 +238,16 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         if (isLastGhost):
           #Next state is Pacman
           v = min(v, self.maxValue(state.generateSuccessor(agentIndex, action), 0, depth-1, alpha, beta))
-          if v <= alpha:
-            return v
-          beta = min(beta, v)
 
         else:
           #Next state is another ghost
           v = min(v, self.minValue(state.generateSuccessor(agentIndex, action), (agentIndex+1) % state.getNumAgents(), depth, alpha, beta))
+
+        #Continue pruning based on alpha even if ghost after ghost
+        #Can not prune beta since there's always a chance to find a better beta between ghosts
+        if v < alpha:
+          return v
+        beta = min(beta, v)
 
       return v
 
@@ -261,7 +264,14 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         beta = float("inf")
 
         for action in gameState.getLegalActions(0):
+
           maxVal = max(v, self.minValue(gameState.generateSuccessor(0, action), 1, self.depth, alpha, beta))
+
+          #Prune in first depth
+          if maxVal > beta:
+            return action
+          alpha = max(alpha, maxVal)
+
           if maxVal > v:
             v = maxVal
             optimalAction = action

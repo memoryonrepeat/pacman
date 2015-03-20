@@ -11,7 +11,7 @@
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
-
+from __future__ import division
 from util import manhattanDistance
 from game import Directions
 import random, util
@@ -77,7 +77,7 @@ class ReflexAgent(Agent):
 
         "*** YOUR CODE HERE ***"
 
-        print type(ghostState), dir(ghostState)
+        #print type(ghostState), dir(ghostState)
 
         foodUtility = (1/numFood) if (numFood is not 0) else 1000
 
@@ -283,15 +283,66 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
       Your expectimax agent (question 4)
     """
 
-    def getAction(self, gameState):
-        """
-          Returns the expectimax action using self.depth and self.evaluationFunction
+    def maxValue(self, state, agentIndex, depth):
 
-          All ghosts should be modeled as choosing uniformly at random from their
-          legal moves.
-        """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+      if depth==0 or state.isWin() or state.isLose():
+        return self.evaluationFunction(state)
+
+      v = float("-inf")
+
+      for action in state.getLegalActions(agentIndex):
+        
+        v = max(v, self.expValue(state.generateSuccessor(agentIndex, action), (agentIndex+1) % state.getNumAgents(), depth))
+
+      return v
+
+    def expValue(self, state, agentIndex, depth):
+
+      isLastGhost = False
+
+      if (agentIndex == state.getNumAgents()-1):
+        isLastGhost = True
+
+      if depth==0 or state.isWin() or state.isLose():
+        return self.evaluationFunction(state)
+
+      v = 0
+      actionCount = 0
+      for action in state.getLegalActions(agentIndex):
+        
+        actionCount += 1
+
+        if (isLastGhost):
+          #Next state is Pacman
+          v += self.maxValue(state.generateSuccessor(agentIndex, action), 0, depth-1)
+        else:
+          #Next state is another ghost
+          v += self.expValue(state.generateSuccessor(agentIndex, action), (agentIndex+1) % state.getNumAgents(), depth)
+
+      if actionCount == 0:
+        return 0
+
+      return v/actionCount
+
+    def getAction(self, gameState):
+      """
+        Returns the expectimax action using self.depth and self.evaluationFunction
+
+        All ghosts should be modeled as choosing uniformly at random from their
+        legal moves.
+      """
+      "*** YOUR CODE HERE ***"
+
+      optimalAction = "Stop"
+      v = float("-inf")
+
+      for action in gameState.getLegalActions(0):
+        maxVal = max(v, self.expValue(gameState.generateSuccessor(0, action), 1, self.depth))
+        if maxVal > v:
+          v = maxVal
+          optimalAction = action
+
+      return optimalAction    
 
 def betterEvaluationFunction(currentGameState):
     """

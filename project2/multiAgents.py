@@ -85,13 +85,17 @@ class ReflexAgent(Agent):
 
         foodDistances = [manhattanDistance(newPos,food) for food in newFood.asList()]
 
+        capsuleDistances = [manhattanDistance(newPos,food) for food in successorGameState.getCapsules() ]
+
         ghostDistances = [manhattanDistance(newPos,ghost) for ghost in ghostPositions]
 
-        distanceToClosestFood = min(foodDistances) if (foodDistances) else 1
+        distanceToClosestFood = min(foodDistances) if (foodDistances and min(foodDistances) != 0) else 1
 
-        distanceToClosestGhost = min(ghostDistances) if (ghostDistances) else 1
+        distanceToClosestGhost = min(ghostDistances) if (ghostDistances and min(ghostDistances) != 0) else 1
 
-        return successorGameState.getScore() - distanceToClosestFood - distanceToClosestGhost + totalScaredTimes
+        distanceToClosestCapsule = min(capsuleDistances) if (capsuleDistances and min(capsuleDistances) != 0) else 1
+
+        return successorGameState.getScore() + 1/distanceToClosestFood - 1/distanceToClosestGhost + totalScaredTimes + 1/distanceToClosestCapsule
 
 def scoreEvaluationFunction(currentGameState):
     """

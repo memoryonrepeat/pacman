@@ -356,7 +356,42 @@ def betterEvaluationFunction(currentGameState):
       DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # Useful information you can extract from a GameState (pacman.py)
+
+    #successorGameState = currentGameState.generatePacmanSuccessor(action)
+
+    #Same to Q1 but assessing current game state instead
+    #TODO: Try with other features to see if performance improves
+    successorGameState = currentGameState
+
+    newPos = successorGameState.getPacmanPosition()
+    newFood = successorGameState.getFood()
+    numFood = successorGameState.getNumFood()
+    newGhostStates = successorGameState.getGhostStates()
+    newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+    ghostPositions = successorGameState.getGhostPositions()
+
+    "*** YOUR CODE HERE ***"
+
+    #print type(ghostState), dir(ghostState)
+
+    foodUtility = (1/numFood) if (numFood is not 0) else 1000
+
+    totalScaredTimes = reduce(lambda x,y: x+y , newScaredTimes)
+
+    foodDistances = [manhattanDistance(newPos,food) for food in newFood.asList()]
+
+    capsuleDistances = [manhattanDistance(newPos,food) for food in successorGameState.getCapsules() ]
+
+    ghostDistances = [manhattanDistance(newPos,ghost) for ghost in ghostPositions]
+
+    distanceToClosestFood = min(foodDistances) if (foodDistances and min(foodDistances) != 0) else 1
+
+    distanceToClosestGhost = min(ghostDistances) if (ghostDistances and min(ghostDistances) != 0) else 1
+
+    distanceToClosestCapsule = min(capsuleDistances) if (capsuleDistances and min(capsuleDistances) != 0) else 1
+
+    return successorGameState.getScore() + 1/distanceToClosestFood - 1/distanceToClosestGhost + totalScaredTimes + 1/distanceToClosestCapsule
 
 # Abbreviation
 better = betterEvaluationFunction
